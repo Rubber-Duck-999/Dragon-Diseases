@@ -1,0 +1,15 @@
+l_english:
+ wyrmrot_trait_desc:0 "A wasting sickness caught from Valyrian wyrms, said to fester in the blood of anyone unlucky enough to catch it."
+ wyrmrot_dragon_trait_desc:0 "The same rot that sickens men, but far crueler to dragons - it eats through scale and wing alike."
+ dragon_wyrmrot_resistant_trait_desc:0 "Some dragons are simply born hardier - their blood runs too hot and too old for Wyrmrot to take root."
+
+ wyrmrot_epidemic_name:0 "Wyrmrot"
+ wyrmrot_dragon_epidemic_name:0 "Wyrmrot"
+
+ wyrmrot_events.0001.t:0 "Wyrmrot Stirs"
+ wyrmrot_events.0001.desc:0 "Word spreads of a sickness taking hold among dragonkind and the smallfolk alike - Wyrmrot has returned."
+ wyrmrot_events.0001.a:0 "A grim omen."
+
+ wyrmrot_events.0002.t:0 "Wyrmrot Recedes"
+ wyrmrot_events.0002.desc:0 "With so few dragons left living, the sickness has finally burned itself out - for now."
+ wyrmrot_events.0002.a:0 "Small mercies."

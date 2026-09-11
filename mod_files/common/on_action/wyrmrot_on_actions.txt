@@ -1,0 +1,99 @@
+# Wyrmrot - remaining on_action wiring for disease #1, now that the real epidemic system
+# (common/epidemics/00_dragon_disease_epidemics.txt) handles character-to-character spread
+# and trait grant/removal automatically. All that's left here: occasionally seed a new
+# outbreak (create_epidemic_outbreak) while the dragon population is healthy.
+# Human/dragon infection rolls, death rolls, and egg destruction are NOT here anymore -
+# see common/epidemics/00_dragon_disease_epidemics.txt (can_infect_character/
+# on_character_infected) and events/dragon_diseases_events.txt (the death/recovery pulse,
+# which also rolls egg destruction against the infected character's OWN held eggs only -
+# not every egg in the world).
+#
+# STILL UNVERIFIED: the exact vanilla on_action name to hook a recurring world pulse into.
+# create_epidemic_outbreak's own real usage (Valyrian Steel's fund_expedition.txt, AGOT's
+# learning_medicine_events.txt) is always called from inside an EVENT, scoped to a specific
+# province, not from a bare on_action - so the outbreak-seeding trigger below should really
+# live in a small periodic event (same self-rescheduling idiom as dragon_diseases_events.txt)
+# rather than a standalone on_action block. Left as an on_action here only because that's
+# consistent with the original scaffold; converting it to a rescheduling event akin to
+# dragon_diseases.0001/0002 is the safer bet once you're ready to test this in-game.
+
+wyrmrot_yearly_check_on_action = {
+	trigger = {
+		NOT = { has_global_variable = wyrmrot_active }
+		NOT = { dragon_population_critical_trigger = yes } # stop seeding new outbreaks once dragons are scarce
+	}
+	effect = {
+		random_list = {
+			2 = { # tune outbreak frequency here
+				# Needs a real province to seed at - e.g. a random living dragon's location,
+				# or a fixed Valyria-adjacent province. Picking any_living_dragon's location is
+				# closest to the original "caught near Valyria" flavour without requiring an
+				# actual travel-arrival hook (AGOT/Valyrian Steel don't model dragons or
+				# explorers physically traveling there - see chat history).
+				random_in_global_list = {
+					variable = living_dragons
+					limit = { always = yes }
+					location = {
+						create_epidemic_outbreak = {
+							type = wyrmrot
+							intensity = minor
+						}
+					}
+				}
+			}
+			98 = {}
+		}
+	}
+}
+
+wyrmrot_dragon_outbreak_on_action = {
+	trigger = {
+		NOT = { has_global_variable = wyrmrot_dragon_active }
+		NOT = { dragon_population_critical_trigger = yes }
+	}
+	effect = {
+		random_list = {
+			2 = {
+				random_in_global_list = {
+					variable = living_dragons
+					limit = { always = yes }
+					location = {
+						create_epidemic_outbreak = {
+							type = wyrmrot_dragon
+							intensity = minor
+						}
+					}
+				}
+			}
+			98 = {}
+		}
+	}
+}
+
+# Innate Wyrmrot resistance - rolled once per newly created dragon, never for humans (the
+# has_trait = dragon check below is what keeps this strictly dragon-only). Hooked into
+# on_character_creation rather than editing AGOT's own dragon templates (agot_dragon_template/
+# agot_dragon_hatchling_template/etc., which already roll similar random physique/personality
+# traits in their own after_creation blocks) - keeps this mod a pure addition instead of a
+# patch to shared AGOT files.
+#
+# STILL UNVERIFIED: on_character_creation is a well-known vanilla on_action from general CK3
+# modding knowledge, but no local file confirms its exact name. The block is deliberately
+# named on_character_creation itself (not a unique name) so it merges additively with
+# vanilla's own definition of it, the same way DLC content extends base on_actions elsewhere
+# in this codebase - double-check both the name and the merge behavior against your own
+# install before relying on this firing at all.
+on_character_creation = {
+	trigger = {
+		has_trait = dragon
+		NOT = { has_trait = dragon_wyrmrot_resistant }
+	}
+	effect = {
+		random_list = {
+			10 = { # roughly 1 in 10 dragons born naturally immune - tune after playtesting
+				add_trait = dragon_wyrmrot_resistant
+			}
+			90 = {}
+		}
+	}
+}

@@ -1,0 +1,167 @@
+# Real CK3 epidemic type registrations, confirmed against common/epidemics/00_epidemics.txt
+# (bubonic_plague entry) and the Valyrian Steel submod's fund_expedition.txt, which uses this
+# exact system (create_epidemic_outbreak / contract_disease_effect / can_contract_disease_trigger)
+# for its own "explorer returns sick" outcome.
+#
+# This replaces the earlier hand-rolled global-variable + on_action guesswork: the engine
+# itself grants/removes the `trait` below as a character enters/leaves an active outbreak in
+# their province, once `can_infect_character` passes - we don't add_trait manually.
+#
+# Two entries, matching the trait pair in common/traits/00_dragon_disease_traits.txt:
+#   wyrmrot         - human strain, can_infect_character reuses vanilla's own
+#                     can_contract_disease_trigger (fine for humans - it doesn't reject them).
+#   wyrmrot_dragon  - dragon strain, needs its own can_infect_character since
+#                     can_contract_disease_trigger hard-requires is_human = yes
+#                     (common/scripted_triggers/20_health_triggers.txt).
+
+wyrmrot = {
+	trait = wyrmrot
+	color = green
+	priority = 5
+
+	shader_data = { # placeholder - copy real values from an existing entry's shader_data once art is set up
+		strength = 0.6
+		edge_fade = 0.4
+		tile_multiplier = 0.005
+		texture_index = 0
+		channel = green
+	}
+
+	name = {
+		first_valid = {
+			triggered_desc = {
+				trigger = { always = yes }
+				desc = wyrmrot_epidemic_name
+			}
+		}
+	}
+
+	on_start = {
+		start_dragon_disease_outbreak_effect = { ACTIVE_FLAG = wyrmrot_active }
+	}
+
+	on_end = {
+		end_dragon_disease_outbreak_effect = { ACTIVE_FLAG = wyrmrot_active }
+	}
+
+	character_infection_chance = {
+		value = character_infection_chance_default_value
+		multiply = 0.06 # matches AGOT's own bubonic_plague tuning - revisit after playtesting
+	}
+
+	can_infect_character = {
+		can_contract_disease_trigger = { DISEASE = wyrmrot }
+		immune_to_epidemic = { EPIDEMIC = scope:epidemic }
+	}
+
+	on_character_infected = {
+		# Self-rescheduling death/recovery check - see events/dragon_diseases_events.txt.
+		# The epidemic engine grants the trait itself; this just starts the character-level
+		# pulse, mirroring how vanilla's own quarterly/yearly disease-recovery pulses work for
+		# traits that ARE in its hardcoded lists (ours isn't, so we run our own).
+		trigger_event = {
+			id = dragon_diseases.0001
+			days = { 30 60 }
+		}
+	}
+
+	infection_levels = { # placeholder tier, copy AGOT's bubonic_plague shape once tuned
+		10 = {
+			province_modifier = {
+				monthly_county_control_decline_add = -0.4
+				county_opinion_add = -10
+			}
+		}
+	}
+
+	outbreak_intensities = {
+		minor = {
+			outbreak_chance = {
+				value = outbreak_chance_minor_default_value
+				multiply = outbreak_chance_minor_mult_value
+			}
+			spread_chance = {
+				value = spread_chance_epidemics_default_value
+				multiply = spread_chance_epidemics_mult_value
+			}
+			max_provinces = { 10 25 }
+			infection_duration = {
+				months = { 4 8 }
+			}
+		}
+	}
+}
+
+wyrmrot_dragon = {
+	trait = wyrmrot_dragon
+	color = dark_green
+	priority = 5
+
+	shader_data = { # placeholder, see wyrmrot above
+		strength = 0.6
+		edge_fade = 0.4
+		tile_multiplier = 0.005
+		texture_index = 0
+		channel = green
+	}
+
+	name = {
+		first_valid = {
+			triggered_desc = {
+				trigger = { always = yes }
+				desc = wyrmrot_dragon_epidemic_name
+			}
+		}
+	}
+
+	on_start = {
+		start_dragon_disease_outbreak_effect = { ACTIVE_FLAG = wyrmrot_dragon_active }
+	}
+
+	on_end = {
+		end_dragon_disease_outbreak_effect = { ACTIVE_FLAG = wyrmrot_dragon_active }
+	}
+
+	character_infection_chance = {
+		value = character_infection_chance_default_value
+		multiply = 0.15 # dragons roll for infection more readily than humans - "deadlier to dragons" starts here
+	}
+
+	can_infect_character = {
+		can_contract_dragon_disease_trigger = { DISEASE = wyrmrot_dragon }
+		immune_to_epidemic = { EPIDEMIC = scope:epidemic }
+	}
+
+	on_character_infected = {
+		trigger_event = {
+			id = dragon_diseases.0002
+			days = { 20 45 } # shorter fuse than the human strain - deadlier, faster
+		}
+	}
+
+	infection_levels = {
+		10 = {
+			province_modifier = {
+				monthly_county_control_decline_add = -0.4
+				county_opinion_add = -10
+			}
+		}
+	}
+
+	outbreak_intensities = {
+		minor = {
+			outbreak_chance = {
+				value = outbreak_chance_minor_default_value
+				multiply = outbreak_chance_minor_mult_value
+			}
+			spread_chance = {
+				value = spread_chance_epidemics_default_value
+				multiply = spread_chance_epidemics_mult_value
+			}
+			max_provinces = { 10 25 }
+			infection_duration = {
+				months = { 3 6 }
+			}
+		}
+	}
+}

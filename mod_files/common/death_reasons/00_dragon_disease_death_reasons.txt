@@ -1,0 +1,14 @@
+# One death_reason entry per disease, referenced via dragon_disease_death_roll_effect's
+# DEATH_REASON parameter (common/scripted_effects/dragon_disease_effects.txt). Modelled
+# loosely on vanilla's death_disease entry - check common/death_reasons/00_death_reasons.txt
+# in your install and align flags/death_range with however that file structures things,
+# I'm going from general CK3 death_reason conventions here, not a copy of a confirmed
+# vanilla block.
+#
+# --- Disease 1: Wyrmrot ---
+# Add a death_reason per new disease below this one.
+
+death_wyrmrot = {
+	death_reason_flag = dead_disease
+	icon = "death_disease"
+}

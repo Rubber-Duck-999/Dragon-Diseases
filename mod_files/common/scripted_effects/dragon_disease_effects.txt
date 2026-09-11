@@ -1,0 +1,44 @@
+# Shared start/end/death-roll effects.
+#
+# start_/end_dragon_disease_outbreak_effect are called from the epidemic type's own
+# on_start/on_end (common/epidemics/00_dragon_disease_epidemics.txt) - the ACTIVE_FLAG
+# global variable exists only so other systems (egg destruction, the yearly outbreak-seed
+# check) can tell whether that specific disease is currently running anywhere, since no
+# effect was found to query "is epidemic X active" directly.
+#
+# dragon_disease_death_roll_effect is called from the self-rescheduling character events
+# in events/dragon_diseases_events.txt - the epidemic system grants/removes the illness
+# trait automatically, but doesn't roll death/recovery for traits outside its own hardcoded
+# lists, so that part is still ours to run.
+
+start_dragon_disease_outbreak_effect = {
+	set_global_variable = {
+		name = $ACTIVE_FLAG$
+		value = yes
+	}
+}
+
+end_dragon_disease_outbreak_effect = {
+	remove_global_variable = $ACTIVE_FLAG$
+}
+
+dragon_disease_death_roll_effect = {
+	random_list = {
+		$CHANCE$ = {
+			death = { death_reason = $DEATH_REASON$ }
+		}
+		100 = {} # remainder - CK3 random_list normalizes weights, this just needs to be
+		         # comfortably bigger than $CHANCE$ so the math reads sensibly per call site.
+	}
+}
+
+dragon_disease_egg_destruction_roll_effect = {
+	random_list = {
+		$CHANCE$ = {
+			destroy_artifact = yes # confirm this is the correct effect name for permanently
+			                       # removing an artifact in your game version - some versions
+			                       # use remove_artifact for unequip vs. destroy for deletion.
+		}
+		100 = {}
+	}
+}

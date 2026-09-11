@@ -1,0 +1,99 @@
+namespace = dragon_diseases
+
+# Self-rescheduling death/recovery pulses, one per disease strain. Started once by the
+# epidemic's on_character_infected (common/epidemics/00_dragon_disease_epidemics.txt) and
+# then keeps re-triggering itself on a delay for as long as the character still has the
+# trait - the same idiom vanilla uses for its own hardcoded disease pulses, just done in
+# script since our custom traits aren't in vanilla's hardcoded trait lists
+# (has_quarterly_recovery_disease_trigger etc. in 20_health_triggers.txt).
+
+dragon_diseases.0001 = { # human strain (wyrmrot) pulse
+	hidden = yes
+	trigger = {
+		has_trait = wyrmrot
+	}
+	immediate = {
+		dragon_disease_death_roll_effect = {
+			DEATH_REASON = death_wyrmrot
+			CHANCE = 5 # mild compared to the dragon strain - tune once playtested
+		}
+
+		# Human -> egg transmission, scoped to eggs THIS infected character personally
+		# owns - not a world-wide roll. Uses the real every_owned_artifact character
+		# scope instead of the earlier world-iterator guess.
+		if = {
+			limit = { is_alive = yes }
+			every_owned_artifact = {
+				limit = { is_exposed_dragon_egg_trigger = yes }
+				dragon_disease_egg_destruction_roll_effect = { CHANCE = 5 }
+			}
+		}
+
+		if = {
+			limit = {
+				is_alive = yes
+				has_trait = wyrmrot
+			}
+			trigger_event = {
+				id = dragon_diseases.0001
+				days = { 30 60 }
+			}
+		}
+	}
+}
+
+dragon_diseases.0002 = { # dragon strain (wyrmrot_dragon) pulse
+	hidden = yes
+	trigger = {
+		has_trait = wyrmrot_dragon
+	}
+	immediate = {
+		dragon_disease_death_roll_effect = {
+			DEATH_REASON = death_wyrmrot
+			CHANCE = 35 # deliberately much harsher than the human roll - "deadlier to dragons"
+		}
+		if = {
+			limit = {
+				is_alive = yes
+				has_trait = wyrmrot_dragon
+			}
+			trigger_event = {
+				id = dragon_diseases.0002
+				days = { 20 45 }
+			}
+		}
+	}
+}
+
+# Flavour events, unchanged from the earlier draft.
+wyrmrot_events.0001 = { # outbreak begins
+	type = character_event
+	title = wyrmrot_events.0001.t
+	desc = wyrmrot_events.0001.desc
+	theme = illness
+
+	left_portrait = {
+		character = root
+		animation = personality_sad
+	}
+
+	option = {
+		name = wyrmrot_events.0001.a
+	}
+}
+
+wyrmrot_events.0002 = { # outbreak ends
+	type = character_event
+	title = wyrmrot_events.0002.t
+	desc = wyrmrot_events.0002.desc
+	theme = illness
+
+	left_portrait = {
+		character = root
+		animation = personality_happy
+	}
+
+	option = {
+		name = wyrmrot_events.0002.a
+	}
+}

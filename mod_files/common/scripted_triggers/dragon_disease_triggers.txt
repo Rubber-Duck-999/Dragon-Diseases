@@ -1,0 +1,41 @@
+# Shared eligibility checks, called from can_infect_character blocks in
+# common/epidemics/00_dragon_disease_epidemics.txt - confirmed real usage pattern from
+# AGOT's own common/epidemics/00_epidemics.txt (bubonic_plague's can_infect_character calls
+# can_contract_disease_trigger the same way).
+#
+# The human strain reuses vanilla's own can_contract_disease_trigger directly in the
+# epidemic type (it works fine for humans). The dragon strain needs its own version below,
+# since can_contract_disease_trigger hard-requires is_human = yes
+# (common/scripted_triggers/20_health_triggers.txt) - exactly what keeps dragons disease-free
+# today.
+#
+# Call with DISEASE = the dragon-side illness trait (e.g. wyrmrot_dragon).
+
+can_contract_dragon_disease_trigger = {
+	has_trait = dragon
+	is_alive = yes
+	NOT = { has_trait = $DISEASE$ }
+	NOT = { has_trait = dragon_wyrmrot_resistant } # innate immunity, see 00_dragon_disease_traits.txt
+}
+
+# Checked inside every_owned_artifact on the infected character (events/
+# dragon_diseases_events.txt, dragon_diseases.0001) - only that character's own held eggs
+# are at risk, not every egg in the world.
+is_exposed_dragon_egg_trigger = {
+	has_variant = dragon_egg # VERIFY: matches the dragon_egg entry from
+	                         # 00_agot_dragonegg_type.txt - not confirmed against that
+	                         # file's actual contents, only the artifact slot definition.
+}
+
+# Population-based end condition - stops NEW outbreaks being seeded (see
+# wyrmrot_yearly_check_on_action), it does not force-end an outbreak already running.
+# No effect was found anywhere in the transferred files to forcibly end an active
+# epidemic instance - infection_duration/spread_chance decay is how real epidemics end.
+# `living_dragons` is AGOT's own global variable list, confirmed in
+# common/scripted_values/00_agot_dragon_values.txt.
+dragon_population_critical_trigger = {
+	any_in_global_list = {
+		variable = living_dragons
+		count < 5
+	}
+}

@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <radialGradient id="badge_bg" cx="50%" cy="42%" r="65%">
+      <stop offset="0%" stop-color="#3a2c18"/>
+      <stop offset="100%" stop-color="#171009"/>
+    </radialGradient>
+    <linearGradient id="parchment" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#d8c48f"/>
+      <stop offset="100%" stop-color="#a9895a"/>
+    </linearGradient>
+    <linearGradient id="grub" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#c9a15a"/>
+      <stop offset="100%" stop-color="#8a6432"/>
+    </linearGradient>
+  </defs>
+
+  <!-- circular badge, worn ink-on-parchment feel -->
+  <circle cx="64" cy="64" r="62" fill="url(#badge_bg)" stroke="#0a0603" stroke-width="2"/>
+  <circle cx="64" cy="64" r="56" fill="none" stroke="#5a4526" stroke-width="1.5" opacity="0.6"/>
+
+  <!-- mound of earth, woodcut style -->
+  <path d="M 14 96 Q 40 78 64 90 Q 90 76 116 92 L 116 112 L 14 112 Z"
+        fill="url(#parchment)" stroke="#1a1208" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M 20 98 Q 42 86 64 94 M 70 92 Q 92 82 110 94"
+        fill="none" stroke="#1a1208" stroke-width="1.6" opacity="0.55"/>
+
+  <!-- segmented grub body, sitting on the mound -->
+  <g stroke="#1a1208" stroke-width="3" stroke-linejoin="round">
+    <ellipse cx="88" cy="86" rx="13" ry="10" fill="url(#grub)"/>
+    <ellipse cx="74" cy="82" rx="12" ry="10" fill="url(#grub)"/>
+    <ellipse cx="61" cy="76" rx="11.5" ry="10.5" fill="url(#grub)"/>
+    <ellipse cx="50" cy="66" rx="11" ry="11" fill="url(#grub)"/>
+    <!-- head -->
+    <circle cx="42" cy="50" r="14" fill="url(#grub)"/>
+  </g>
+
+  <!-- ink segment lines -->
+  <path d="M 80 78 Q 81 86 80 94 M 67 74 Q 68 82 67 90 M 55 68 Q 57 76 55 84"
+        fill="none" stroke="#1a1208" stroke-width="1.6" opacity="0.6"/>
+
+  <!-- rot blotches instead of the cute red antenna-tips -->
+  <circle cx="56" cy="70" r="2.2" fill="#5c7a22" opacity="0.85"/>
+  <circle cx="70" cy="80" r="2" fill="#5c7a22" opacity="0.8"/>
+  <circle cx="84" cy="84" r="1.8" fill="#5c7a22" opacity="0.75"/>
+
+  <!-- antennae -->
+  <path d="M 36 38 L 30 24 M 46 36 L 50 22" fill="none" stroke="#1a1208" stroke-width="2.6" stroke-linecap="round"/>
+  <circle cx="30" cy="24" r="3" fill="#7a1f1f" stroke="#1a1208" stroke-width="1.6"/>
+  <circle cx="50" cy="22" r="3" fill="#7a1f1f" stroke="#1a1208" stroke-width="1.6"/>
+
+  <!-- face -->
+  <ellipse cx="37" cy="49" rx="2.2" ry="3" fill="#1a1208"/>
+  <ellipse cx="47" cy="49" rx="2.2" ry="3" fill="#1a1208"/>
+</svg>

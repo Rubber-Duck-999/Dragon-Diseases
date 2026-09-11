@@ -1,0 +1,82 @@
+# Illness traits for this mod's diseases. Each disease is a pair of traits (a human
+# strain and a dragon strain) plugged into the shared, parameterized framework in
+# scripted_triggers/dragon_disease_triggers.txt and scripted_effects/dragon_disease_effects.txt.
+#
+# Kept separate from vanilla/AGOT illness traits on purpose: AGOT's
+# `can_contract_disease_trigger` (common/scripted_triggers/20_health_triggers.txt)
+# hard-requires `is_human = yes`, which is exactly what blocks dragons from
+# catching anything today. Reusing that trigger would mean patching a shared,
+# heavily-used trigger just to carve out an exception for these diseases -
+# not worth the compatibility risk.
+#
+# These are the `trait` field registered on each epidemic type in
+# common/epidemics/00_dragon_disease_epidemics.txt - the epidemic engine grants/removes them
+# automatically once a character is inside an active outbreak and passes can_infect_character,
+# same as any vanilla illness trait. We don't add_trait these manually anywhere.
+#
+# --- Disease 1: Wyrmrot ---
+# To add another disease: copy this pair of traits with new names, copy the two epidemic
+# type entries in 00_dragon_disease_epidemics.txt, and copy the self-rescheduling death/
+# recovery event pair in events/dragon_diseases_events.txt - the shared trigger/effect files
+# need no changes.
+
+wyrmrot = {
+	index = 500 # AGOT/vanilla use indices well below this; bump if it collides on load.
+	illness = yes
+	flag = illness
+	flag = debilitating_illness
+
+	opposites = { wyrmrot }
+
+	same_trait_visible = no
+	shown_in_ruler_designer = no
+
+	desc = wyrmrot_trait_desc
+
+	category = personality # placeholder category, illness traits are usually excluded from normal categories - verify against how vanilla illness traits (e.g. bubonic_plague) are declared and match that instead.
+
+	icon = "wyrmrot" # gfx/interface/icons/traits/wyrmrot.svg - convert to .dds before use, see that folder.
+
+	health = -3
+}
+
+wyrmrot_dragon = {
+	index = 501
+
+	illness = yes
+	flag = illness
+	flag = debilitating_illness
+	flag = wyrmrot_dragon_illness # custom flag, used by wyrmrot triggers/on_actions so dragon-only logic never has to say has_trait = wyrmrot_dragon directly everywhere.
+
+	opposites = { wyrmrot_dragon }
+
+	same_trait_visible = no
+	shown_in_ruler_designer = no
+
+	desc = wyrmrot_dragon_trait_desc
+
+	icon = "wyrmrot" # same art as the human strain - it's the same rot, just worse. Give it a
+	                 # distinct variant later if you want the dragon strain to read differently.
+
+	health = -6 # more severe than the human strain, feeds the higher death-roll in wyrmrot_effects.txt
+}
+
+# Innate, congenital-style resistance - a small chance for a newly created dragon to be
+# naturally immune to Wyrmrot, same shape as AGOT's own random physique/personality traits
+# rolled in agot_dragon_template's after_creation (see the dragon templates pasted earlier
+# in chat). Granted separately via common/on_action/wyrmrot_on_actions.txt hooking into
+# vanilla's on_character_creation, rather than editing AGOT's templates directly - keeps
+# this mod a pure addition instead of a patch to shared files.
+dragon_wyrmrot_resistant = {
+	index = 502
+
+	genetic = yes # same_trait_visible/inherited handling as AGOT's other congenital dragon traits
+	same_trait_visible = no
+	shown_in_ruler_designer = no
+
+	desc = dragon_wyrmrot_resistant_trait_desc
+
+	category = personality # placeholder, see the illness traits above for the same caveat
+
+	icon = "wyrmrot_resistant" # placeholder - no art yet, see gfx/interface/icons/traits/README.md
+}
